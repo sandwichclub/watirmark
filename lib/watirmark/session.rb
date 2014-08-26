@@ -116,6 +116,7 @@ module Watirmark
     end
 
     def openbrowser
+      use_headless_display if config.headless
       Page.browser = new_watir_browser
       initialize_page_checkers
       Page.browser
@@ -129,6 +130,12 @@ module Watirmark
       ensure
         Page.browser = nil
       end
+
+      if @headless
+        @headless.destroy
+        @headless = nil
+      end
+
     end
 
     def getos
@@ -143,6 +150,16 @@ module Watirmark
     end
 
     private
+
+    def use_headless_display
+      unless RbConfig::CONFIG['host_os'].match('linux')
+        warn "Headless only supported on Linux"
+        return
+      end
+      require 'headless'
+      @headless = Headless.new
+      @headless.start
+    end
 
     def new_watir_browser
       config.webdriver ||= :firefox

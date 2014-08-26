@@ -176,7 +176,7 @@ module Selenium
         def watirmark_close_browser
           return if @process.nil? || @process.exited? || @stopped
           @stopped = true
-          Page.browser.close if Watirmark::Configuration.instance.closebrowseronexit
+          Watirmark::Session.instance.closebrowser if Watirmark::Configuration.instance.closebrowseronexit
         end
       end
     end
