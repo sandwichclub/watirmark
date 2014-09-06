@@ -56,6 +56,8 @@ module Watirmark
         config.firefox_profile = default_firefox_profile
       elsif config.webdriver.to_s.eql? 'firefox_proxy'
         config.firefox_profile = proxy_firefox_profile(config.proxy_host, config.proxy_port)
+      elsif config.webdriver.to_s.eql? 'chrome'
+        config.chrome_switches = default_chrome_switches
       end
     end
 
@@ -108,6 +110,13 @@ module Watirmark
       profile['network.proxy_type'] = 1
       profile['network.proxy.type'] = 1
       profile
+    end
+
+    def default_chrome_switches
+      if Configuration.instance.chrome_switches
+        Watirmark.logger.info "Using chrome switches: #{Configuration.instance.chrome_switches}"
+        Configuration.instance.chrome_switches.split.to_a
+      end
     end
 
     def newsession
@@ -167,6 +176,8 @@ module Watirmark
         Watir::Browser.new config.webdriver.to_sym, :profile => config.firefox_profile
       elsif config.webdriver.to_sym == :firefox_proxy
         Watir::Browser.new :firefox, :profile => config.firefox_profile
+      elsif config.webdriver.to_sym == :chrome
+        Watir::Browser.new config.webdriver.to_sym, :switches => config.chrome_switches
       elsif config.webdriver.to_sym == :sauce
         Watir::Browser.new use_sauce
       else
@@ -179,9 +190,9 @@ module Watirmark
       caps = sauce_config(sb)
 
       @driver = Selenium::WebDriver.for(
-        :remote,
-        :url                  => "http://#{config.sauce_username}:#{config.sauce_access_key}@ondemand.saucelabs.com:80/wd/hub",
-        :desired_capabilities => caps)
+          :remote,
+          :url                  => "http://#{config.sauce_username}:#{config.sauce_access_key}@ondemand.saucelabs.com:80/wd/hub",
+          :desired_capabilities => caps)
       @driver
     end
 
