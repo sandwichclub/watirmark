@@ -144,7 +144,7 @@ module Watirmark
         @headless.destroy
         @headless = nil
       end
-
+      
     end
 
     def getos
