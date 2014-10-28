@@ -83,10 +83,18 @@ module Watirmark
       def inspect
         model_friendly_name = @model_name ? "#@model_name: " : nil
         model_details = " #{to_h}" unless to_h.empty?
+        model_details = obfuscate_passwords(eval(model_details))
         included_models = "\n   #{@children.map(&:inspect).join("\n   ")}" unless @children.empty?
         "#{model_friendly_name}#{model_class_name}#{model_details}#{included_models}"
       end
 
+      def obfuscate_passwords hash
+        h = {}
+        hash.each do |key, value|
+          h[key] = '***OBFUSCATING PASSWORD***' if key.to_s.match(/password/)
+        end
+        h
+      end
 
       def model_class_name
         name = self.class.inspect.to_s
