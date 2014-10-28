@@ -48,7 +48,7 @@ module Watirmark
     # set up the global variables, reading from the config file
     def initialize
       Watirmark.add_exit_task {
-        closebrowser if config.closebrowseronexit
+        closebrowser if config.closebrowseronexit || config.headless
         @driver.quit if config.webdriver.to_s.eql? 'sauce'
       }
 
@@ -56,8 +56,6 @@ module Watirmark
         config.firefox_profile = default_firefox_profile
       elsif config.webdriver.to_s.eql? 'firefox_proxy'
         config.firefox_profile = proxy_firefox_profile(config.proxy_host, config.proxy_port)
-      elsif config.webdriver.to_s.eql? 'chrome'
-        config.chrome_switches = default_chrome_switches
       end
     end
 
@@ -112,20 +110,12 @@ module Watirmark
       profile
     end
 
-    def default_chrome_switches
-      if Configuration.instance.chrome_switches
-        Watirmark.logger.info "Using chrome switches: #{Configuration.instance.chrome_switches}"
-        Configuration.instance.chrome_switches.split.to_a
-      end
-    end
-
     def newsession
       closebrowser
       openbrowser
     end
 
     def openbrowser
-      use_headless_display if config.headless
       Page.browser = new_watir_browser
       initialize_page_checkers
       Page.browser
@@ -144,7 +134,6 @@ module Watirmark
         @headless.destroy
         @headless = nil
       end
-      
     end
 
     def getos
@@ -190,9 +179,9 @@ module Watirmark
       caps = sauce_config(sb)
 
       @driver = Selenium::WebDriver.for(
-          :remote,
-          :url                  => "http://#{config.sauce_username}:#{config.sauce_access_key}@ondemand.saucelabs.com:80/wd/hub",
-          :desired_capabilities => caps)
+        :remote,
+        :url                  => "http://#{config.sauce_username}:#{config.sauce_access_key}@ondemand.saucelabs.com:80/wd/hub",
+        :desired_capabilities => caps)
       @driver
     end
 
