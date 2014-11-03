@@ -169,6 +169,8 @@ module Watirmark
         Watir::Browser.new config.webdriver.to_sym, :switches => config.chrome_switches
       elsif config.webdriver.to_sym == :sauce
         Watir::Browser.new use_sauce
+      elsif config.webdriver.to_sym == :appium
+        Watir::Browser.new use_appium
       else
         Watir::Browser.new config.webdriver.to_sym
       end
@@ -201,6 +203,39 @@ module Watirmark
       caps[:name]   = config.sauce_test_title.nil? ? "Testing Selenium 2 with Ruby on Sauce" : config.sauce_test_title
       puts caps
       caps
+    end
+
+    def use_appium
+      server_url = 'http://0.0.0.0:4723/wd/hub'
+
+      if config.appium_server && config.appium_port
+        server_url = "http://#{config.appium_server}:#{config.appium_port}/wd/hub"
+      end
+
+      @driver = Selenium::WebDriver.for(
+          :remote,
+          :url => server_url,
+          :desired_capabilities => appium_capabilities,
+      )
+
+      @driver
+    end
+
+    def appium_capabilities
+      platform_name = config.appium_platform || 'iOS'
+      version_number = config.appium_version_number || '8.1'
+      device_name = config.appium_device_name || 'iPhone Simulator'
+      app_path = config.appium_app_path
+
+      capabilities = {
+          platformName:  platform_name,
+          versionNumber: version_number,
+          deviceName:    device_name,
+          app:           app_path,
+      }
+
+      Watirmark.logger.info "using appium with capabilities: #{capabilities.inspect}"
+      capabilities
     end
 
     def initialize_page_checkers
