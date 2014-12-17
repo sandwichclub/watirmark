@@ -115,7 +115,7 @@ module Watirmark
     def default_chrome_switches
       if Configuration.instance.chrome_switches
         Watirmark.logger.info "Using chrome switches: #{Configuration.instance.chrome_switches}"
-        Configuration.instance.chrome_switches.split.to_a
+        Configuration.instance.chrome_switches
       end
     end
 
