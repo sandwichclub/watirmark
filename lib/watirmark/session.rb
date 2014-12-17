@@ -56,6 +56,8 @@ module Watirmark
         config.firefox_profile = default_firefox_profile
       elsif config.webdriver.to_s.eql? 'firefox_proxy'
         config.firefox_profile = proxy_firefox_profile(config.proxy_host, config.proxy_port)
+      elsif config.webdriver.to_s.eql? 'chrome'
+        config.chrome_switches = default_chrome_switches
       end
     end
 
@@ -110,12 +112,20 @@ module Watirmark
       profile
     end
 
+    def default_chrome_switches
+      if Configuration.instance.chrome_switches
+        Watirmark.logger.info "Using chrome switches: #{Configuration.instance.chrome_switches}"
+        Configuration.instance.chrome_switches.split.to_a
+      end
+    end
+
     def newsession
       closebrowser
       openbrowser
     end
 
     def openbrowser
+      use_headless_display if config.headless
       Page.browser = new_watir_browser
       initialize_page_checkers
       Page.browser
