@@ -211,6 +211,7 @@ module Watirmark
       end
       caps.platform = config.sauce_os.nil? ? "Windows 7" : config.sauce_os.to_s
       caps[:name]   = config.sauce_test_title.nil? ? "Testing Selenium 2 with Ruby on Sauce" : config.sauce_test_title
+      #caps.recordVideo = config.sauce_record_video ||= false
       puts caps
       caps
     end
