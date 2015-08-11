@@ -182,7 +182,7 @@ module Watirmark
         Watir::Browser.new :firefox, profile: config.firefox_profile, http_client: client
       when :sauce
         Watir::Browser.new use_sauce
-      elsif config.webdriver.to_sym == :appium
+      when :appium
         Watir::Browser.new use_appium
       else
         Watir::Browser.new config.webdriver.to_sym, http_client: client
