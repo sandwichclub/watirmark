@@ -125,6 +125,10 @@ module Watirmark
     end
 
     def openbrowser
+      Watir.default_timeout = config.watir_timeout
+      Watir.prefer_css = config.prefer_css
+      Watir.always_locate = config.always_locate
+
       use_headless_display if config.headless
       Page.browser = new_watir_browser
       initialize_page_checkers
@@ -170,19 +174,19 @@ module Watirmark
     end
 
     def new_watir_browser
-      config.webdriver ||= :firefox
-      if config.webdriver.to_sym == :firefox
-        Watir::Browser.new config.webdriver.to_sym, :profile => config.firefox_profile
-      elsif config.webdriver.to_sym == :firefox_proxy
-        Watir::Browser.new :firefox, :profile => config.firefox_profile
-      elsif config.webdriver.to_sym == :chrome
-        Watir::Browser.new config.webdriver.to_sym, :switches => config.chrome_switches
-      elsif config.webdriver.to_sym == :sauce
+      client = Selenium::WebDriver::Remote::Http::Default.new
+      client.timeout = config.http_timeout
+
+      case config.webdriver.to_sym
+      when :firefox, :firefox_proxy
+        Watir::Browser.new :firefox, profile: config.firefox_profile, http_client: client
+      when :sauce
         Watir::Browser.new use_sauce
       elsif config.webdriver.to_sym == :appium
         Watir::Browser.new use_appium
       else
-        Watir::Browser.new config.webdriver.to_sym
+        Watir::Browser.new config.webdriver.to_sym, http_client: client
+        #Watir::Browser.new config.webdriver.to_sym, :switches => config.chrome_switches
       end
     end
 

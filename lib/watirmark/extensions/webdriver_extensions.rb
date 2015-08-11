@@ -1,37 +1,6 @@
 require 'watir-webdriver/extensions/select_text'
 
-Watir::always_locate = false
-
 module Watir
-
-  class Browser
-    # for modal dialogs that close on submission, these might
-    # fail to run because the window has been destroyed
-    alias :old_run_checkers :run_checkers
-
-    # this is basically a check to make sure we're not
-    # running the checkers on a modal dialog that has closed
-    # by the time the checkers have run
-    def run_checkers
-      @error_checkers.each do |checker|
-        begin
-          checker.call(self)
-        rescue Selenium::WebDriver::Error::UnknownError, Selenium::WebDriver::Error::NoSuchWindowError => e
-          Watirmark.logger.warn "Unable to run checker: #{e.message}"
-          break
-        end
-      end
-    end
-  end
-
-  # Trigger checkers when manually submitting a form
-  class Form < HTMLElement
-    alias :old_submit :submit
-    def submit
-      old_submit
-      browser.run_checkers
-    end
-  end
 
   module Container
     alias :row :tr
@@ -77,6 +46,11 @@ module Watir
     def download_links(*args)
       DownloadLinkCollection.new(self, extract_selector(args).merge(:tag_name => "a"))
     end
+  end
+
+  module Atoms
+    ATOMS[:getPreviousSibling] = File.read(File.expand_path("../atoms/getPreviousSibling.js", __FILE__))
+    ATOMS[:getNextSibling] = File.read(File.expand_path("../atoms/getNextSibling.js", __FILE__))
   end
 
   class Table < HTMLElement
@@ -136,30 +110,85 @@ module Watir
   end
 
   class Element
-    begin
-      alias :prev_sibling :previous_sibling
-      alias :prevsibling :previous_sibling
-      alias :nextsibling :next_sibling
-    rescue NameError
-      # not using convio-specific webdriver. Ignore and continue
+
+    def next_sibling
+      e = locate_dom_element(:getNextSibling)
+      e.nil? ? element(xpath: './following-sibling::*') : e
+    end
+    alias_method :nextsibling, :next_sibling
+
+    def previous_sibling
+      e = locate_dom_element(:getPreviousSibling)
+      e.nil? ? element(xpath: './preceding-sibling::*') : e
+    end
+    alias_method :prev_sibling, :previous_sibling
+    alias_method :prevsibling, :previous_sibling
+
+    def locate_dom_element(method)
+      assert_exists
+
+      e = element_call { execute_atom method, @element }
+
+      if e.kind_of?(Selenium::WebDriver::Element)
+        Watir.element_class_for(e.tag_name.downcase).new(@parent, :element => e)
+      end
+    end
+
+    alias_method :old_element_call, :element_call
+    def element_call &block
+      old_element_call &block
+    rescue Selenium::WebDriver::Error::UnknownError => ex
+      raise unless ex.message.include?("Element is not clickable at point")
+      reset!
+      assert_exists
+      retry
+    end
+
+    alias_method :old_text, :text
+    def text
+      old_text.strip
     end
 
     def click_if_exists
       click if exists?
     end
 
-    alias :click_no_wait :click
+    alias_method :click_no_wait, :click
   end
 
   class TextFieldLocator
-    def validate_element(element)
+    def check_deprecation(element)
       if element.tag_name.downcase == 'textarea'
         warn "Locating textareas with '#text_field' is deprecated. Please, use '#textarea' method instead for #{@selector}"
       end
-      super
     end
   end
 
+  class IFrame < HTMLElement
+    alias_method :old_switch_to!, :switch_to!
+    def switch_to!
+      retry_attempts ||= 0
+      old_switch_to!
+    rescue Watir::Exception::UnknownFrameException
+      # UnknownFrameException is workaround for- https://code.google.com/p/chromedriver/issues/detail?id=948
+      retry_attempts += 1
+      retry if retry_attempts == 1
+    end
+  end
+
+  class Alert
+    alias_method :old_text, :text
+    def text
+      old_text.strip
+    end
+  end
+
+  class Browser
+    alias_method :old_text, :text
+    def text
+      old_text.strip
+    end
+  end
 
 end
 
