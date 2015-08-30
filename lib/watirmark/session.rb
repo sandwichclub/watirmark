@@ -62,7 +62,7 @@ module Watirmark
     end
 
     def default_firefox_profile
-      file_types = "text/comma-separated-values,text/csv,application/pdf, application/x-msdos-program, application/x-unknown-application-octet-stream,
+      file_types = 'text/comma-separated-values,text/csv,application/pdf, application/x-msdos-program, application/x-unknown-application-octet-stream,
               application/vnd.ms-powerpoint, application/excel, application/vnd.ms-publisher, application/x-unknown-message-rfc822, application/vnd.ms-excel,
               application/msword, application/x-mspublisher, application/x-tar, application/zip, application/x-gzip, application/x-stuffit,
               application/vnd.ms-works, application/powerpoint, application/rtf, application/postscript, application/x-gtar,
@@ -70,7 +70,7 @@ module Watirmark
               application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/msexcel, application/x-msexcel,
               application/x-excel, application/vnd.ms-excel, application/excel, application/x-ms-excel, application/x-dos_ms_excel,
               text/csv, text/comma-separated-values, application/octet-stream, application/haansoftxls, application/msexcell,
-              application/softgrid-xls, application/vnd.ms-excel, x-softmaker-pm"
+              application/softgrid-xls, application/vnd.ms-excel, x-softmaker-pm'
 
       if Configuration.instance.default_firefox_profile
         Watirmark.logger.info "Using firefox profile: #{Configuration.instance.default_firefox_profile}"
@@ -153,11 +153,11 @@ module Watirmark
     def getos
       case RUBY_PLATFORM
         when /cygwin|mswin|mingw|bccwin|wince|emx/
-          return "windows"
+          return 'windows'
         when /darwin/
-          return "mac"
+          return 'mac'
         when /linux/
-          return "linux"
+          return 'linux'
       end
     end
 
@@ -165,7 +165,7 @@ module Watirmark
 
     def use_headless_display
       unless RbConfig::CONFIG['host_os'].match('linux')
-        warn "Headless only supported on Linux"
+        warn 'Headless only supported on Linux'
         return
       end
       require 'headless'
@@ -178,43 +178,43 @@ module Watirmark
       client.timeout = config.http_timeout
 
       case config.webdriver.to_sym
-      when :firefox, :firefox_proxy
-        Watir::Browser.new :firefox, profile: config.firefox_profile, http_client: client
-      when :sauce
-        Watir::Browser.new use_sauce
-      when :appium
-        Watir::Browser.new use_appium
-      else
-        Watir::Browser.new config.webdriver.to_sym, http_client: client
-        #Watir::Browser.new config.webdriver.to_sym, :switches => config.chrome_switches
+        when :firefox, :firefox_proxy
+          Watir::Browser.new :firefox, profile: config.firefox_profile, http_client: client
+        when :sauce
+          Watir::Browser.new use_sauce
+        when config.webdriver.to_sym == :appium
+          Watir::Browser.new use_appium
+        else
+          Watir::Browser.new config.webdriver.to_sym, http_client: client
+          #Watir::Browser.new config.webdriver.to_sym, :switches => config.chrome_switches
       end
     end
 
     def use_sauce
-      sb   = config.sauce_browser.nil? ? "firefox" : config.sauce_browser.to_s
+      sb   = config.sauce_browser.nil? ? 'firefox' : config.sauce_browser.to_s
       caps = sauce_config(sb)
 
       @driver = Selenium::WebDriver.for(
-        :remote,
-        :url                  => "http://#{config.sauce_username}:#{config.sauce_access_key}@ondemand.saucelabs.com:80/wd/hub",
-        :desired_capabilities => caps)
-      @driver
+          :remote,
+          :url                  => "http://#{config.sauce_username}:#{config.sauce_access_key}@ondemand.saucelabs.com:80/wd/hub",
+          :desired_capabilities => caps
+      )
     end
 
     def sauce_config(sb)
       caps              = Selenium::WebDriver::Remote::Capabilities.send(sb.to_sym)
       caps.browser_name = sb
       case sb
-        when "firefox"
+        when 'firefox'
           caps.version = config.sauce_browser_version.nil? ? 26 : config.sauce_browser_version.to_i
-        when "chrome"
+        when 'chrome'
           caps.version = config.sauce_browser_version.nil? ? 32 : config.sauce_browser_version.to_i
-        when "ie"
-          caps.browser_name = "internet explorer" # caps.browser_name requires ie to be full name
+        when 'ie'
+          caps.browser_name = 'internet explorer' # caps.browser_name requires ie to be full name
           caps.version      = config.sauce_browser_version.nil? ? 10 : config.sauce_browser_version.to_i
       end
-      caps.platform = config.sauce_os.nil? ? "Windows 7" : config.sauce_os.to_s
-      caps[:name]   = config.sauce_test_title.nil? ? "Testing Selenium 2 with Ruby on Sauce" : config.sauce_test_title
+      caps.platform = config.sauce_os.nil? ? 'Windows 7' : config.sauce_os.to_s
+      caps[:name]   = config.sauce_test_title.nil? ? 'Testing Selenium 2 with Ruby on Sauce' : config.sauce_test_title
       #caps.recordVideo = config.sauce_record_video ||= false
       puts caps
       caps
@@ -229,11 +229,9 @@ module Watirmark
 
       @driver = Selenium::WebDriver.for(
           :remote,
-          :url => server_url,
-          :desired_capabilities => appium_capabilities,
+          url: server_url,
+          desired_capabilities: appium_capabilities,
       )
-
-      @driver
     end
 
     def appium_capabilities
@@ -254,7 +252,7 @@ module Watirmark
     end
 
     def initialize_page_checkers
-      POST_WAIT_CHECKERS.each { |p| Page.browser.add_checker p }
+      POST_WAIT_CHECKERS.each { |p| Page.browser.after_hooks p }
     end
 
   end
