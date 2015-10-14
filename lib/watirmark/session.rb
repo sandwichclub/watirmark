@@ -180,6 +180,8 @@ module Watirmark
       case config.webdriver.to_sym
         when :firefox, :firefox_proxy
           Watir::Browser.new :firefox, profile: config.firefox_profile, http_client: client
+        when :selenium_cloud
+          Watir::Browser.new use_selenium
         when :sauce
           Watir::Browser.new use_sauce
         when config.webdriver.to_sym == :appium
@@ -188,6 +190,25 @@ module Watirmark
           Watir::Browser.new config.webdriver.to_sym, http_client: client
           #Watir::Browser.new config.webdriver.to_sym, :switches => config.chrome_switches
       end
+    end
+
+    def use_selenium
+      sel_browser = config.selenium_webdriver
+      caps        = selenium_config(sel_browser.to_s)
+
+      @driver = Selenium::WebDriver.for(
+        :remote,
+        :url                  => "http://#{config.selenium_hub_url}/wd/hub",
+        :desired_capabilities => caps,
+      )
+    end
+
+    def selenium_config(sel_browser)
+      caps              = Selenium::WebDriver::Remote::Capabilities.send(sel_browser.to_sym)
+      caps.browser_name = sel_browser
+      caps.platform     = config.selenium_os
+      puts caps
+      caps
     end
 
     def use_sauce
