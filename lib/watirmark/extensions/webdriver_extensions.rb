@@ -2,6 +2,87 @@ require 'watir-webdriver/extensions/select_text'
 
 module Watir
 
+  # ref: https://github.com/watir/watir-webdriver/pull/387/files
+  module PageLoad
+
+    #
+    # Waits for all page requests to finish before acting on the browser
+    # To be used in conjunction with after_hooks
+    #
+    # @example
+    #   browser.after_hooks.add {Watir::PageLoad.wait_for_page_load}
+    #
+
+    def self.wait_for_page_load(timeout = 30)
+      lambda do |browser|
+        self.wait_for_angular(timeout, browser)
+        self.wait_for_ajax(timeout, browser)
+      end
+    end
+
+    #
+    # Waits for all angular actions to finish before acting on the browser
+    # To be used in conjunction with after_hooks
+    #
+    # @example
+    #   browser.after_hooks.add {Watir::PageLoad.wait_for_angular_completion}
+    #
+
+    def self.wait_for_angular_completion(timeout = 30)
+      lambda do |browser|
+        self.wait_for_angular(timeout, browser)
+      end
+    end
+
+    #
+    # Waits for all ajax requests to finish before acting on the browser
+    # To be used in conjunction with after_hooks
+    #
+    # @example
+    #   browser.after_hooks.add {Watir::PageLoad.wait_for_ajax_completion}
+    #
+
+    def self.wait_for_ajax_completion(timeout = 30)
+      lambda do |browser|
+        self.wait_for_ajax(timeout, browser)
+      end
+    end
+
+    #
+    # Make calls to the browser waiting for angular to complete
+    #
+
+    def self.wait_for_angular(timeout = 30, browser)
+      angular_element = "document.querySelectorAll('[ng-app]')[0]"
+      begin
+        browser.execute_script("angular.element(#{angular_element}).scope().pageFinishedRendering = false")
+        browser.execute_script("angular.getTestability(#{angular_element}).whenStable(function(){angular.element(#{angular_element}).scope().pageFinishedRendering = true})")
+        Watir::Wait.until(timeout, 'waiting for angular to render') {
+          browser.execute_script("return angular.element(#{angular_element}).scope().pageFinishedRendering")
+        }
+      rescue Selenium::WebDriver::Error::InvalidElementStateError
+        #no ng-app found on page, continue as normal
+      rescue Selenium::WebDriver::Error::JavascriptError
+        #angular not used in the application, continue as normal
+      end
+    end
+
+
+    #
+    # Make calls to the browser waiting for ajax to complete
+    #
+
+    def self.wait_for_ajax(timeout=30, browser)
+      if browser.execute_script('return (typeof jQuery != "undefined")')
+        if browser.execute_script('return jQuery.active') > 0
+          Watir::Wait.until(timeout, 'waiting for ajax') {
+            browser.execute_script('return jQuery.active') == 0;
+          }
+        end
+      end
+    end
+  end
+
   module Container
     alias :row :tr
     alias :cell :td
