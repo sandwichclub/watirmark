@@ -23,4 +23,3 @@ Gem::Specification.new do |s|
   s.add_dependency('activesupport', '~> 3.2.22')
   s.add_dependency('headless', '~> 2.2.3') # This only gets required when on Linux
 end
-
