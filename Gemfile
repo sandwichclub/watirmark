@@ -1,14 +1,14 @@
-source "https://rubygems.org"
+source 'https://rubygems.org'
 
 gemspec
 
 group :development do
-  gem 'watir', '~> 6.0.0.beta5'
+  gem 'watir', '~> 6.0.1'
   gem 'rdoc'
   gem 'rspec', '2.99'
   gem 'rake'
   gem 'bundler'
-  gem 'mocha', '0.12.8', :require => false
+  gem 'mocha', '0.12.8', require: false
   gem 'cucumber'
   gem 'gherkin'
   gem 'rspec-mocks'
