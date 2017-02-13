@@ -85,15 +85,15 @@ module Watirmark
         profile['browser.download.folderList']                  = 2 # custom location
         profile['browser.download.dir']                         = download_directory
         profile['browser.helperApps.neverAsk.saveToDisk']       = file_types
-        profile['security.warn_entering_secure']                =  false
+        profile['security.warn_entering_secure']                = false
         profile['security.warn_submit_insecure']                = false
         profile['security.warn_entering_secure.show_once']      = false
-        profile['security.warn_entering_weak']                  =  false
-        profile['security.warn_entering_weak.show_once']        =  false
-        profile['security.warn_leaving_secure']                 =  false
-        profile['security.warn_leaving_secure.show_once']       =  false
-        profile['security.warn_viewing_mixed']                  =  false
-        profile['security.warn_viewing_mixed.show_once']        =  false
+        profile['security.warn_entering_weak']                  = false
+        profile['security.warn_entering_weak.show_once']        = false
+        profile['security.warn_leaving_secure']                 = false
+        profile['security.warn_leaving_secure.show_once']       = false
+        profile['security.warn_viewing_mixed']                  = false
+        profile['security.warn_viewing_mixed.show_once']        = false
         profile['security.mixed_content.block_active_content']  = false
       end
       profile
@@ -112,6 +112,7 @@ module Watirmark
       profile
     end
 
+    # https://src.chromium.org/viewvc/chrome/trunk/src/chrome/common/pref_names.cc
     def default_chrome_switches
       if Configuration.instance.chrome_switches
         Watirmark.logger.info "Using chrome switches: #{Configuration.instance.chrome_switches}"
@@ -153,11 +154,11 @@ module Watirmark
     def getos
       case RUBY_PLATFORM
       when /cygwin|mswin|mingw|bccwin|wince|emx/
-          return 'windows'
+        return 'windows'
       when /darwin/
-          return 'mac'
+        return 'mac'
       when /linux/
-          return 'linux'
+        return 'linux'
       else
         # type code here
       end
@@ -181,18 +182,36 @@ module Watirmark
       client.open_timeout = config.open_timeout
 
       case config.webdriver.to_sym
-        when :firefox, :firefox_proxy
-          Watir::Browser.new :firefox, profile: config.firefox_profile, http_client: client
-        when :selenium_cloud
-          Watir::Browser.new use_selenium
-        when :sauce
-          Watir::Browser.new use_sauce
-        when config.webdriver.to_sym == :appium
-          Watir::Browser.new use_appium
-        else
-          Watir::Browser.new config.webdriver.to_sym, http_client: client
-          #Watir::Browser.new config.webdriver.to_sym, :switches => config.chrome_switches
+      when :chrome
+        Watir::Browser.new :chrome, use_chrome(client)
+      when :firefox, :firefox_proxy
+        Watir::Browser.new :firefox, profile: config.firefox_profile, http_client: client
+      when :selenium_cloud
+        Watir::Browser.new use_selenium
+      when :sauce
+        Watir::Browser.new use_sauce
+      when :appium
+        Watir::Browser.new use_appium
+      else
+        Watir::Browser.new config.webdriver.to_sym, http_client: client
       end
+    end
+
+    def use_chrome(client)
+      prefs = {
+        download: {
+          prompt_for_download: false,
+          #default_directory: '/path/to/dir'
+        }
+      }
+
+      chromedriver_path = config.chromedriver_path if config.chromedriver_path
+      {
+        prefs: prefs,
+        http_client: client,
+        switches: config.chrome_switches,
+        driver_path: chromedriver_path
+      }
     end
 
     def use_selenium
@@ -214,28 +233,30 @@ module Watirmark
       caps
     end
 
+    # saucelabs
     def use_sauce
       sb   = config.sauce_browser.nil? ? 'firefox' : config.sauce_browser.to_s
       caps = sauce_config(sb)
 
       @driver = Selenium::WebDriver.for(
-          :remote,
-          url:                   "http://#{config.sauce_username}:#{config.sauce_access_key}@ondemand.saucelabs.com:80/wd/hub",
-          desired_capabilities:  caps
+        :remote,
+        url:                   "http://#{config.sauce_username}:#{config.sauce_access_key}@ondemand.saucelabs.com:80/wd/hub",
+        desired_capabilities:  caps
       )
     end
+
 
     def sauce_config(sb)
       caps              = Selenium::WebDriver::Remote::Capabilities.send(sb.to_sym)
       caps.browser_name = sb
       case sb
       when 'firefox'
-          caps.version = config.sauce_browser_version.nil? ? 26 : config.sauce_browser_version.to_i
+        caps.version = config.sauce_browser_version.nil? ? 26 : config.sauce_browser_version.to_i
       when 'chrome'
-          caps.version = config.sauce_browser_version.nil? ? 32 : config.sauce_browser_version.to_i
+        caps.version = config.sauce_browser_version.nil? ? 32 : config.sauce_browser_version.to_i
       when 'ie'
-          caps.browser_name = 'internet explorer' # caps.browser_name requires ie to be full name
-          caps.version      = config.sauce_browser_version.nil? ? 10 : config.sauce_browser_version.to_i
+        caps.browser_name = 'internet explorer' # caps.browser_name requires ie to be full name
+        caps.version      = config.sauce_browser_version.nil? ? 10 : config.sauce_browser_version.to_i
       else
         # type code here
       end
@@ -254,9 +275,9 @@ module Watirmark
       end
 
       @driver = Selenium::WebDriver.for(
-          :remote,
-          url:                  server_url,
-          desired_capabilities: appium_capabilities,
+        :remote,
+        url:                  server_url,
+        desired_capabilities: appium_capabilities,
       )
     end
 
@@ -267,10 +288,10 @@ module Watirmark
       app_path        = config.appium_app_path
 
       capabilities = {
-          platformName:  platform_name,
-          versionNumber: version_number,
-          deviceName:    device_name,
-          app:           app_path,
+        platformName:  platform_name,
+        versionNumber: version_number,
+        deviceName:    device_name,
+        app:           app_path,
       }
 
       Watirmark.logger.info "using appium with capabilities: #{capabilities.inspect}"
