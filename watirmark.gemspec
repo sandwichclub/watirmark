@@ -14,12 +14,12 @@ Gem::Specification.new do |s|
   s.test_files = Dir['spec/**/*.rb']
   s.executables = 'watirmark'
   s.require_paths = %w(lib)
-  s.add_dependency('watir', '~> 6.0.1')
+  s.add_dependency('watir', '~> 6.1.0')
   s.add_dependency('american_date', '~> 1.1.1')
   s.add_dependency('logger', '~> 1.2.8')
   s.add_dependency('uuid', '~> 2.3.8')
   s.add_dependency('nokogiri', '~> 1.6.0')
-  s.add_dependency('thor', '~> 0.19.1')
-  s.add_dependency('activesupport', '~> 3.2.22')
+  s.add_dependency('thor', '~> 0.19.4')
+  s.add_dependency('activesupport', '~> 3.2.22.5')
   s.add_dependency('headless', '~> 2.3.1') # This only gets required when on Linux
 end
