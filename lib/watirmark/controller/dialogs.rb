@@ -16,7 +16,7 @@ module Watirmark
       raise Watirmark::TestError, 'Timed out while waiting for modal dialog to open'
     end
 
-    def with_modal_dialog &blk
+    def with_modal_dialog(&blk)
       wait_for_modal_dialog
       Page.browser.windows.last.use &blk
     end

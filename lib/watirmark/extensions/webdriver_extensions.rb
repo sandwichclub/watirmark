@@ -89,7 +89,7 @@ module Watir
 
     class DownloadLink < Anchor
       def initialize(*args)
-        @dir = File.join(Watirmark::Configuration.instance.projectpath, "reports", "downloads")
+        @dir = File.join(Watirmark::Configuration.instance.projectpath, 'reports', 'downloads')
         super
       end
 
@@ -115,7 +115,7 @@ module Watir
     end
 
     def download_link(*args)
-      DownloadLink.new(self, extract_selector(args).merge(:tag_name => "a"))
+      DownloadLink.new(self, extract_selector(args).merge(:tag_name => 'a'))
     end
 
     class DownloadLinkCollection < ElementCollection
@@ -125,13 +125,13 @@ module Watir
     end
 
     def download_links(*args)
-      DownloadLinkCollection.new(self, extract_selector(args).merge(:tag_name => "a"))
+      DownloadLinkCollection.new(self, extract_selector(args).merge(:tag_name => 'a'))
     end
   end
 
   module Atoms
-    ATOMS[:getPreviousSibling] = File.read(File.expand_path("../atoms/getPreviousSibling.js", __FILE__))
-    ATOMS[:getNextSibling] = File.read(File.expand_path("../atoms/getNextSibling.js", __FILE__))
+    ATOMS[:getPreviousSibling] = File.read(File.expand_path('../atoms/getPreviousSibling.js', __FILE__))
+    ATOMS[:getNextSibling] = File.read(File.expand_path('../atoms/getNextSibling.js', __FILE__))
   end
 
   class Table < HTMLElement

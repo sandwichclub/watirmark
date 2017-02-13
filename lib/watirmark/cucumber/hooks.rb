@@ -1,4 +1,4 @@
-require_relative "hook_helper"
+require_relative 'hook_helper'
 
 Around('@catch-post-failure') do |scenario, block|
   HookHelper.trap_post_errors(&block)

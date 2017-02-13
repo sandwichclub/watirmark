@@ -1,16 +1,16 @@
 module Watirmark
 
-  def self.loader &block
+  def self.loader(&block)
     ActiveSupport::Dependencies.mechanism = :require if defined? ActiveSupport::Dependencies
     Loader.new.instance_eval &block
   end
-  
+
   # This can be used for files that are page classes or flows.
   # Autoloading them
   # will not actually 'require' the file until a class in that file is used. 
   # Note that this does not apply to modules so it's most useful for the
   # page accessors and any files in admin, user, etc.   
-  class Loader  
+  class Loader
 
     def autoload_files(directory)
       mod = "Watirmark::#{product}"
@@ -38,34 +38,34 @@ module Watirmark
         require library_path(file)
       end
     end
-    
-    def base_directory arg=nil
+
+    def base_directory(arg=nil)
       if arg
         @base_directory = arg
       elsif @base_directory
         @base_directory
       else
-        raise "base_directory not set"
+        raise 'base_directory not set'
       end
     end
-    
-    def product arg=nil
+
+    def product(arg=nil)
       if arg
         @product = arg
       elsif @product
         @product
-      else 
-        raise "product not set"
+      else
+        raise 'product not set'
       end
     end
-    
-    def module arg=nil
+
+    def module(arg=nil)
       if arg
         @module = arg
-      elseif 
+        elseif
       end
     end
-    
+
     private
 
     def library_path(file)
@@ -82,6 +82,6 @@ module Watirmark
       files.each do |file|
         yield file unless File.directory? file
       end
-    end    
+    end
   end
 end

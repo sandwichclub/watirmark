@@ -15,38 +15,39 @@ module Watirmark
 
     def defaults
       {
-        :configfile          => nil,
-        :hostname            => nil,
-        :email               => 'devnull',
-        :closebrowseronexit  => false,
-        :loglevel            => Logger::INFO,
-        :uuid                => nil,
-        :webdriver           => :firefox,
-        :headless            => false,
-        # :always_locate       => true,
-        # :prefer_css          => false,
-        :watir_timeout       => 30,
-        :http_timeout        => 60,
-        # database
-        :dbhostname          => nil,
-        :dbusername          => nil,
-        :dbpassword          => nil,
-        :dbsid               => nil,
-        :dbport              => nil,
+        configfile:           nil,
+        hostname:             nil,
+        email:                'devnull',
+        closebrowseronexit:   false,
+        loglevel:             Logger::INFO,
+        uuid:                 nil,
+        webdriver:            :firefox,
+        headless:             false,
+        # always_locate:        true,
+        # prefer_css:           false,
+        watir_timeout:        30,
+        read_timeout:         60,
+        open_timeout:         60,
+      # database
+        dbhostname:           nil,
+        dbusername:           nil,
+        dbpassword:           nil,
+        dbsid:                nil,
+        dbport:               nil,
         # snapshots
-        :snapshotwidth       => 1000,
-        :snapshotheight      => 1000,
-        :projectpath         => nil,
-        :sauce_username      => nil,
-        :sauce_access_key    => nil,
-        :dbi_url             => nil,
+        snapshotwidth:        1000,
+        snapshotheight:       1000,
+        projectpath:          nil,
+        sauce_username:       nil,
+        sauce_access_key:     nil,
+        dbi_url:              nil,
         # selenium cloud
-        :selenium_hub_url => nil,
-        :selenium_webdriver  => :firefox,
-        :selenium_os         => :linux,
+        selenium_hub_url:     nil,
+        selenium_webdriver:   :firefox,
+        selenium_os:          :linux,
         #to deprecate
-        :profile             => Hash.new { |h, k| h[k] = Hash.new },
-        :profile_name        => :undefined,
+        profile:              Hash.new { |h, k| h[k] = Hash.new },
+        profile_name:         :undefined,
 
       }.merge @runtime_defaults
     end
@@ -58,7 +59,7 @@ module Watirmark
 
     def update(values)
       values.each_pair { |k, v|
-        v = Logger.const_get(v.upcase) if k.to_s == "loglevel" && v.class == String
+        v = Logger.const_get(v.upcase) if k.to_s == 'loglevel' && v.class == String
         self[k] = v
       }
     end
@@ -103,13 +104,13 @@ module Watirmark
       return unless File.exists?(configfile.to_s)
       filename = File.expand_path(configfile)
       case File.extname filename
-        when ".txt", ".hudson"
-          parse_text_file filename
-        when ".yml"
-          parse_yaml_file filename
-        else
-          Watirmark.logger.warn "Unsure how to handle configuration file #{configfile}. Assuming .txt"
-          parse_text_file filename
+      when '.txt', '.hudson'
+        parse_text_file filename
+      when '.yml'
+        parse_yaml_file filename
+      else
+        Watirmark.logger.warn "Unsure how to handle configuration file #{configfile}. Assuming .txt"
+        parse_text_file filename
       end
     end
 
@@ -119,8 +120,8 @@ module Watirmark
     # library to be read from the environment
     def read_from_environment
       @settings.each_key do |var|
-        next if var.to_s.upcase == "USERNAME"
-        next if var.to_s.upcase == "HOSTNAME" && self.hostname
+        next if var.to_s.upcase == 'USERNAME'
+        next if var.to_s.upcase == 'HOSTNAME' && self.hostname
         env = ENV[var.to_s.upcase]
         if var == :webdriver
           ENV['JOB_NAME']=~ /WEBDRIVER=(\w+)/
@@ -151,53 +152,53 @@ module Watirmark
 
     private
 
-    def update_key key, value
+    def update_key(key, value)
       case value
-        when 'true'
-          update key.to_sym => true
-        when 'false'
-          update key.to_sym => false
-        when /^:(.+)/
-          update key.to_sym => $1.to_sym
-        when /^\d+\s*$/
-          update key.to_sym => value.to_i
-        when /^(\d*\.\d+)\s*$/
-          update key.to_sym => value.to_f
-        else
-          update key.to_sym => value
+      when 'true'
+        update key.to_sym => true
+      when 'false'
+        update key.to_sym => false
+      when /^:(.+)/
+        update key.to_sym => $1.to_sym
+      when /^\d+\s*$/
+        update key.to_sym => value.to_i
+      when /^(\d*\.\d+)\s*$/
+        update key.to_sym => value.to_f
+      else
+        update key.to_sym => value
       end
     end
 
-    def update_profile key
+    def update_profile(key)
       return unless key =~ /^profile\[:(.+)\]\[:(.+)\]/
-      logger.warn "profiles are going to be deprecated. Please use YAML and salesforce_sites"
+      logger.warn 'profiles are going to be deprecated. Please use YAML and salesforce_sites'
       if self[:profile][$1.to_sym] == nil
-        self[:profile] = ({$1.to_sym => {$2.to_sym => value.to_s}})
+        self[:profile] = ({ $1.to_sym => { $2.to_sym => value.to_s } })
       else
-        self[:profile][$1.to_sym].merge!({$2.to_sym => value.to_s})
+        self[:profile][$1.to_sym].merge!({ $2.to_sym => value.to_s })
       end
     end
 
     def update_profile_yaml
-      if self[:salesforce_sites] && self[:salesforce_sites]["active"]
-        site = self[:salesforce_sites]["active"]
+      if self[:salesforce_sites] && self[:salesforce_sites]['active']
+        site = self[:salesforce_sites]['active']
         self[:salesforce_sites][site].each do |key, value|
           self[key.to_sym] = value
         end
       end
     end
 
-    def parse_yaml_file filename
+    def parse_yaml_file(filename)
       YAML.load_file(filename).each_pair { |key, value| update_key key, value }
       update_profile_yaml
     end
 
     # This is the old-style method of using a config.txt
-    def parse_text_file filename
-      Watirmark.logger.warn "Warning: Deprecated use of config.txt. Please use config.yml instead"
+    def parse_text_file(filename)
+      Watirmark.logger.warn 'Warning: Deprecated use of config.txt. Please use config.yml instead'
       IO.readlines(filename).each do |line|
-        line.strip!                 # Remove all extraneous whitespace
-        line.sub!(/#.*$/, "")       # Remove comments
+        line.strip! # Remove all extraneous whitespace
+        line.sub!(/#.*$/, '') # Remove comments
         next unless line.length > 0 # Anything left?
         (key, value) = line.split(/\s*=\s*/, 2)
         update_profile key

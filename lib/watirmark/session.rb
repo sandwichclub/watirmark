@@ -80,35 +80,35 @@ module Watirmark
       end
       profile.native_events = false
       if Configuration.instance.projectpath
-        download_directory = File.join(Configuration.instance.projectpath, "reports", "downloads")
-        download_directory.gsub!("/", "\\") if Selenium::WebDriver::Platform.windows?
-        profile['browser.download.folderList'] = 2 # custom location
-        profile['browser.download.dir'] = download_directory
-        profile['browser.helperApps.neverAsk.saveToDisk'] = file_types
-        profile['security.warn_entering_secure'] =  false
-        profile['security.warn_submit_insecure'] = false
-        profile['security.warn_entering_secure.show_once'] = false
-        profile['security.warn_entering_weak'] =  false
-        profile['security.warn_entering_weak.show_once'] =  false
-        profile['security.warn_leaving_secure'] =  false
-        profile['security.warn_leaving_secure.show_once'] =  false
-        profile['security.warn_viewing_mixed'] =  false
-        profile['security.warn_viewing_mixed.show_once'] =  false
-        profile['security.mixed_content.block_active_content'] = false
+        download_directory = File.join(Configuration.instance.projectpath, 'reports', 'downloads')
+        download_directory.gsub!('/', "\\") if Selenium::WebDriver::Platform.windows?
+        profile['browser.download.folderList']                  = 2 # custom location
+        profile['browser.download.dir']                         = download_directory
+        profile['browser.helperApps.neverAsk.saveToDisk']       = file_types
+        profile['security.warn_entering_secure']                =  false
+        profile['security.warn_submit_insecure']                = false
+        profile['security.warn_entering_secure.show_once']      = false
+        profile['security.warn_entering_weak']                  =  false
+        profile['security.warn_entering_weak.show_once']        =  false
+        profile['security.warn_leaving_secure']                 =  false
+        profile['security.warn_leaving_secure.show_once']       =  false
+        profile['security.warn_viewing_mixed']                  =  false
+        profile['security.warn_viewing_mixed.show_once']        =  false
+        profile['security.mixed_content.block_active_content']  = false
       end
       profile
     end
 
     def proxy_firefox_profile(hostname,port)
       profile = default_firefox_profile
-      profile['network.proxy.http'] = hostname
-      profile['network.proxy.http_port'] = port.to_i
-      profile['network.proxy.ssl'] = hostname
-      profile['network.proxy.ssl_port'] = port.to_i
-      profile['network.proxy.ftp'] = hostname
-      profile['network.proxy.ftp_port'] = port.to_i
-      profile['network.proxy_type'] = 1
-      profile['network.proxy.type'] = 1
+      profile['network.proxy.http']       = hostname
+      profile['network.proxy.http_port']  = port.to_i
+      profile['network.proxy.ssl']        = hostname
+      profile['network.proxy.ssl_port']   = port.to_i
+      profile['network.proxy.ftp']        = hostname
+      profile['network.proxy.ftp_port']   = port.to_i
+      profile['network.proxy_type']       = 1
+      profile['network.proxy.type']       = 1
       profile
     end
 
@@ -152,12 +152,14 @@ module Watirmark
 
     def getos
       case RUBY_PLATFORM
-        when /cygwin|mswin|mingw|bccwin|wince|emx/
+      when /cygwin|mswin|mingw|bccwin|wince|emx/
           return 'windows'
-        when /darwin/
+      when /darwin/
           return 'mac'
-        when /linux/
+      when /linux/
           return 'linux'
+      else
+        # type code here
       end
     end
 
@@ -175,7 +177,8 @@ module Watirmark
 
     def new_watir_browser
       client = Selenium::WebDriver::Remote::Http::Default.new
-      client.timeout = config.http_timeout
+      client.read_timeout = config.read_timeout
+      client.open_timeout = config.open_timeout
 
       case config.webdriver.to_sym
         when :firefox, :firefox_proxy
@@ -198,8 +201,8 @@ module Watirmark
 
       @driver = Selenium::WebDriver.for(
         :remote,
-        :url                  => "http://#{config.selenium_hub_url}/wd/hub",
-        :desired_capabilities => caps,
+        url:                  "http://#{config.selenium_hub_url}/wd/hub",
+        desired_capabilities: caps,
       )
     end
 
@@ -217,8 +220,8 @@ module Watirmark
 
       @driver = Selenium::WebDriver.for(
           :remote,
-          :url                  => "http://#{config.sauce_username}:#{config.sauce_access_key}@ondemand.saucelabs.com:80/wd/hub",
-          :desired_capabilities => caps
+          url:                   "http://#{config.sauce_username}:#{config.sauce_access_key}@ondemand.saucelabs.com:80/wd/hub",
+          desired_capabilities:  caps
       )
     end
 
@@ -226,13 +229,15 @@ module Watirmark
       caps              = Selenium::WebDriver::Remote::Capabilities.send(sb.to_sym)
       caps.browser_name = sb
       case sb
-        when 'firefox'
+      when 'firefox'
           caps.version = config.sauce_browser_version.nil? ? 26 : config.sauce_browser_version.to_i
-        when 'chrome'
+      when 'chrome'
           caps.version = config.sauce_browser_version.nil? ? 32 : config.sauce_browser_version.to_i
-        when 'ie'
+      when 'ie'
           caps.browser_name = 'internet explorer' # caps.browser_name requires ie to be full name
           caps.version      = config.sauce_browser_version.nil? ? 10 : config.sauce_browser_version.to_i
+      else
+        # type code here
       end
       caps.platform = config.sauce_os.nil? ? 'Windows 7' : config.sauce_os.to_s
       caps[:name]   = config.sauce_test_title.nil? ? 'Testing Selenium 2 with Ruby on Sauce' : config.sauce_test_title
@@ -250,16 +255,16 @@ module Watirmark
 
       @driver = Selenium::WebDriver.for(
           :remote,
-          url: server_url,
+          url:                  server_url,
           desired_capabilities: appium_capabilities,
       )
     end
 
     def appium_capabilities
-      platform_name = config.appium_platform || 'iOS'
-      version_number = config.appium_version_number || '8.1'
-      device_name = config.appium_device_name || 'iPhone Simulator'
-      app_path = config.appium_app_path
+      platform_name   = config.appium_platform || 'iOS'
+      version_number  = config.appium_version_number || '8.1'
+      device_name     = config.appium_device_name || 'iPhone Simulator'
+      app_path        = config.appium_app_path
 
       capabilities = {
           platformName:  platform_name,

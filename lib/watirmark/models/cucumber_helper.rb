@@ -7,11 +7,11 @@ module Watirmark
         value = insert_model(value)
         case value
           when String
-            if value[0, 1].eql?("=") #straight eval
+            if value[0, 1].eql?('=') #straight eval
               eval(value[1..value.length])
-            elsif value == "true"
+            elsif value == 'true'
               true
-            elsif value == "false"
+            elsif value == 'false'
               false
             elsif value.strip == ''
               nil

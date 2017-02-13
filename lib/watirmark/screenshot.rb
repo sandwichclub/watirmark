@@ -10,7 +10,7 @@ module Watirmark
       end
 
       def compare_screenshots(masters, currents)
-        raise ArgumentError, "Passed invalid arguments to compare_screenshots" unless masters.kind_of?(MasterAlbum) && currents.kind_of?(CurrentScreenShots)
+        raise ArgumentError, 'Passed invalid arguments to compare_screenshots' unless masters.kind_of?(MasterAlbum) && currents.kind_of?(CurrentScreenShots)
 
         if Watirmark::Configuration.instance.snapshotwidth.kind_of?(Fixnum)
           compare_specific_screenshot_size(currents, masters)
@@ -20,9 +20,9 @@ module Watirmark
       end
 
       def compare_specific_screenshot_size(currents, masters)
-       unless currents.screenshots.md5 == masters.album.md5
-         report_failure(currents.screenshots.filename, masters.album.filename)
-       end
+        unless currents.screenshots.md5 == masters.album.md5
+          report_failure(currents.screenshots.filename, masters.album.filename)
+        end
       end
 
       def compare_standard_screenshot_sizes(currents, masters)
@@ -46,7 +46,7 @@ module Watirmark
         if Watirmark::Configuration.instance.snapshotwidth.kind_of?(Fixnum)
           @screenshots = Current.new
         else
-          widths = Watirmark::Configuration.instance.snapshotwidth.split(",").map {|s| s.to_i}
+          widths = Watirmark::Configuration.instance.snapshotwidth.split(',').map {|s| s.to_i}
           @screenshots = []
           widths.each {|width| @screenshots << Current.new(width) }
         end
@@ -60,7 +60,7 @@ module Watirmark
         if Watirmark::Configuration.instance.snapshotwidth.kind_of?(Fixnum)
           @album = Master.new(filename, screenshot.screenshots)
         else
-          widths = Watirmark::Configuration.instance.snapshotwidth.split(",").map {|s| s.to_i}
+          widths = Watirmark::Configuration.instance.snapshotwidth.split(',').map {|s| s.to_i}
           @album = []
           widths.each_with_index do |width, index|
             @album << Master.new(filename.sub(/\.png/, "_width_#{width}.png"), screenshot.screenshots[index])
@@ -114,7 +114,7 @@ module Watirmark
         FileUtils.mkdir_p(File.dirname(@filename))
         File.unlink(@filename) if File.exists?(@filename)
         FileUtils.copy_file(screenshot.filename, @filename)
-        Watirmark.logger.info "Created new master: #@filename"
+        Watirmark.logger.info "Created new master: #{@filename}"
       end
     end
   end

@@ -5,7 +5,7 @@ module Watirmark
 
     def assert_equal(element, expected)
       return if expected.nil?
-      
+
       element.extend KeywordMethods
       if map = element.radio_map
         expected = map.lookup(expected)
@@ -16,35 +16,35 @@ module Watirmark
     end
 
     # Returns the user visible value of the element.
-    def actual_value element, expected=nil
+    def actual_value(element, expected=nil)
       case element
-        when Watir::Select
-          element.selected_options.first.text
-        when Watir::CheckBox
-          element.set?
-        when Watir::Radio
-          if element.set?(expected)
-            expected
-          else
-            element.value
-          end
-        when Watir::TextField
+      when Watir::Select
+        element.selected_options.first.text
+      when Watir::CheckBox
+        element.set?
+      when Watir::Radio
+        if element.set?(expected)
+          expected
+        else
+          element.value
+        end
+      when Watir::TextField
+        element.value
+      else
+        if element.respond_to?(:value) && element.value != ''
           element.value
         else
-          if element.respond_to?(:value) && element.value != ''
-            element.value
-          else
-            element.text
-          end
+          element.text
+        end
       end
     end
-    
+
     def assert(result)
       unless result
         raise Watirmark::VerificationException, "Expected true got #{result}"
       end
     end
-    
+
     def compare_values(element, expected, actual)
       if Matcher.exists?(expected)
         fail(element, expected, actual) unless Matcher.matches?(element, expected, actual)
@@ -73,16 +73,16 @@ module Watirmark
     def matches?(expected, actual)
       expected = expected.to_f if is_number?(expected)
       case expected
-        when Regexp
-          should_match_regexp(expected, actual)
-        when Float, Fixnum, Bignum, Integer, Rational
-          should_match_number(expected, actual)
+      when Regexp
+        should_match_regexp(expected, actual)
+      when Float, Fixnum, Bignum, Integer, Rational
+        should_match_number(expected, actual)
+      else
+        if normalize_value(expected.to_s) == normalize_value(actual.to_s)
+          true
         else
-          if normalize_value(expected.to_s) == normalize_value(actual.to_s)
-            true
-          else
-            false
-          end
+          false
+        end
       end
     end
 

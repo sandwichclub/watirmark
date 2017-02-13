@@ -31,7 +31,7 @@ module Watirmark
     end
 
     def check_for_noop_populate
-      warn "Warning: Expected to populate values but none were provided" unless @seen_value || populate_data_overridden?
+      warn 'Warning: Expected to populate values but none were provided' unless @seen_value || populate_data_overridden?
     end
 
     # Navigate to the View's edit page and for every value in
@@ -159,7 +159,7 @@ module Watirmark
         ensure
           Watirmark::Session.instance.stop_condition_block = Proc.new {}
         end
-        raise Watirmark::TestError, "Expected a stop condition but no stop conditon met!"
+        raise Watirmark::TestError, 'Expected a stop condition but no stop conditon met!'
       end
     end
 
@@ -172,7 +172,7 @@ module Watirmark
       @records = []
     end
 
-    def run_callback_method name
+    def run_callback_method(name)
       send name if respond_to?(name)
     end
 

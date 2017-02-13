@@ -7,7 +7,7 @@ DataModels = {}
 module Watirmark
   module Transforms
     class << self
-      def new_model model_name, user_defined_name
+      def new_model(model_name, user_defined_name)
         if model_exists?(user_defined_name) && !temporary_model?(user_defined_name)
           DataModels[user_defined_name]
         else

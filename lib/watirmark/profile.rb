@@ -11,7 +11,7 @@ class Profiler
     result = RubyProf.stop
     result.eliminate_methods!([/IO/, /Net::/, /Global/])
     printer = RubyProf::FlatPrinter.new(result)
-    printer.print(STDOUT, :min_percent=> (options[:min_percent] || 1))
+    printer.print(STDOUT, min_percent: (options[:min_percent] || 1))
     puts "----> Time elapsed #{Time.now - beginning} seconds"
   end
 end

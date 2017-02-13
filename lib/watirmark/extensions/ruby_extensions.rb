@@ -71,17 +71,17 @@ class Object
     end
   end
 
-  def meta_eval &blk
+  def meta_eval(&blk)
     meta_class.instance_eval &blk
   end
 
   # Adds methods to a metaclass
-  def meta_def name, &blk
+  def meta_def(name, &blk)
     meta_eval { define_method name, &blk }
   end
 
   # Defines an instance method within a class
-  def class_def name, &blk
+  def class_def(name, &blk)
     class_eval { define_method name, &blk }
   end
 end

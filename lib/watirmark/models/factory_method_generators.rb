@@ -17,7 +17,7 @@ module Watirmark
         end
       end
 
-      def create_getters_and_setters key
+      def create_getters_and_setters(key)
         @keywords << key unless @keywords.include? key #handle call from method_missing
         create_getter_method key
         create_setter_method key
@@ -35,7 +35,7 @@ module Watirmark
         end
       end
 
-      def set_default_value key
+      def set_default_value(key)
         send("#{key}=", get_default_value(key)) if send(key).nil?
       end
 
@@ -57,12 +57,12 @@ module Watirmark
         end
       end
 
-      def collection_name model
+      def collection_name(model)
         method_name(model).pluralize
       end
 
 
-      def create_model_collection model
+      def create_model_collection(model)
         @collection ||= []
         @collection << model unless @collection.include? model
         meta_def collection_name(model).pluralize do
@@ -71,7 +71,7 @@ module Watirmark
       end
 
 
-      def create_model_method model
+      def create_model_method(model)
         unless respond_to? method_name(model)
           meta_def method_name(model) do
             model

@@ -18,36 +18,36 @@ module Watirmark
       @map = Watirmark::RadioMap.new(options[:map]) if options[:map]
     end
 
-    def get *args
+    def get(*args)
       @process_page.activate
       watir_object = @context.instance_exec(*args, &@block)
       return if watir_object.nil?
       watir_object.extend(KeywordMethods)
       watir_object.radio_map = @map if @map
-      watir_object.keyword = @keyword
+      watir_object.keyword   = @keyword
       watir_object
     end
 
-    def set val
+    def set(val)
       return if val.nil?
       element = get
-      val = @map.lookup(val) if @map
+      val     = @map.lookup(val) if @map
       case val
-        when 'nil'
-          element.clear # workaround to empty element values
+      when 'nil'
+        element.clear # workaround to empty element values
+      else
+        case element
+        when Watir::Radio
+          element.set val
+        when Watir::CheckBox
+          val ? element.set : element.clear
+        when Watir::Select
+          element.select val
+        when Watir::Button
+          element.click
         else
-          case element
-            when Watir::Radio
-              element.set val
-            when Watir::CheckBox
-              val ? element.set : element.clear
-            when Watir::Select
-              element.select val
-            when Watir::Button
-              element.click
-            else
-              element.value = val
-          end
+          element.value = val
+        end
       end
     end
 

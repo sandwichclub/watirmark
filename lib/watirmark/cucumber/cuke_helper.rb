@@ -25,7 +25,7 @@ module CukeHelper
 
   # calls the models method if of the pattern <name>.method
   def call_model_methods(hash)
-    hash.each { |key, value| hash[key] = eval(value[1..value.length]) if value[0, 1].eql?("=") }
+    hash.each { |key, value| hash[key] = eval(value[1..value.length]) if value[0, 1].eql?('=') }
     hash
   end
 
@@ -41,7 +41,7 @@ module CukeHelper
   # | foo | bar |
   # | 1   | 2   |
   # | 3   | 4   |
-  def hash_record_list table
+  def hash_record_list(table)
     table.map_headers! { |h| h.to_sym }
     records = table.hashes
     records.map { |record| eval_keywords(record) }
@@ -51,12 +51,12 @@ module CukeHelper
   # from a key, value 2 column table
   # | foo | 1 |
   # | bar | 2 |
-  def hash_record table
+  def hash_record(table)
     colonize eval_keywords(table.rows_hash)
   end
 
   # returns .raw but still handles eval-ing the keywords
-  def raw_record table
+  def raw_record(table)
     table.raw.map { |record| eval_raw_record(record) }
   end
 
@@ -133,15 +133,15 @@ module CukeHelper
   end
 
 # merges sequentially a list of hashes
-  def multimerge *hashes
+  def multimerge(*hashes)
     hashes.inject({}) { |memo, hash| hash.nil? ? memo : memo.merge(hash) }
   end
 
   def create_ts(with_separators=true)
     if with_separators
-      Time.now.strftime "%Y:%m:%d:%H:%M:%S"
+      Time.now.strftime '%Y:%m:%d:%H:%M:%S'
     else
-      Time.now.strftime "%Y%m%d%H%M%S"
+      Time.now.strftime '%Y%m%d%H%M%S'
     end
   end
 

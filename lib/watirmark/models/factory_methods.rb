@@ -28,7 +28,7 @@ module Watirmark
         @children ||= []
       end
 
-      def model *models
+      def model(*models)
         models.each { |model| raise Watirmark::ModelCreationError unless Class === model }
         @children = children + models
         @children.uniq!
@@ -38,7 +38,7 @@ module Watirmark
         @model_type_name = c_name
       end
 
-      def search_term &block
+      def search_term(&block)
         @search = block
       end
 
@@ -54,18 +54,18 @@ module Watirmark
 
       private
 
-      def add_keywords_to_subclass klass
+      def add_keywords_to_subclass(klass)
         if @keys
           klass.keys = []
           klass.keys += @keys.dup
         end
       end
 
-      def add_defaults_to_subclass klass
+      def add_defaults_to_subclass(klass)
         klass.default = @default.dup if @default
       end
 
-      def add_traits_to_subclass klass
+      def add_traits_to_subclass(klass)
         klass.included_traits = @included_traits.dup if @included_traits
       end
 

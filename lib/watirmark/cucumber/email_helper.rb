@@ -49,7 +49,7 @@ module EmailHelper
       end
 
       def read_email_replyto(model, from, timeout=30)
-        qa_inbox(model).get_email_replyto(["FROM", from, "TO", model.email], timeout)
+        qa_inbox(model).get_email_replyto(['FROM', from, 'TO', model.email], timeout)
       end
 
       def read_email_subject_and_from(model, from, subject, timeout=30)
@@ -58,7 +58,7 @@ module EmailHelper
       end
 
       def log_email(model)
-        Watirmark.logger.info "Email Received"
+        Watirmark.logger.info 'Email Received'
         Watirmark.logger.info email[model.model_name].body.inspect
       end
 
@@ -119,10 +119,12 @@ module EmailHelper
     def link(how, matcher)
       links.each do |link|
         case how
-          when :text
+        when :text
             return link if /#{matcher}/.matches link.text
-          when :href
+        when :href
             return link if /#{matcher}/.matches link.href
+        else
+          # type code here
         end
       end
       nil

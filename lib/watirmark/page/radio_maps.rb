@@ -17,7 +17,7 @@ module Watirmark
   end
 
   class RadioMap
-    def initialize hash={}
+    def initialize(hash={})
       @maps = []
       hash.each_pair do |key, val|
         values(key).maps_to(val)

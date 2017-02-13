@@ -12,7 +12,7 @@ module HookHelper
 
     def take_screenshot
       image = "#{Time.now.to_i}-#{UUID.new.generate(:compact)}.png"
-      path = "reports/screenshots"
+      path = 'reports/screenshots'
       file = "#{path}/#{image}"
       FileUtils.mkdir_p path unless File.directory? path
       begin
@@ -20,7 +20,7 @@ module HookHelper
         data = File.open(file, 'rb') { |f| f.read }
         data = Base64.encode64(data)
       rescue Exception => e
-        Watirmark.logger.warn("Screenshot was not taken due to an exception")
+        Watirmark.logger.warn('Screenshot was not taken due to an exception')
         Watirmark.logger.warn(e.to_s)
         Watirmark.logger.warn(e.backtrace)
       end
@@ -30,9 +30,9 @@ module HookHelper
 
     def serialize_models
       return unless Watirmark::Configuration.instance.use_cached_models
-      Dir.mkdir("cache") unless Dir.exists? "cache"
-      File.unlink "cache/DataModels" if File.exists? "cache/DataModels"
-      File.open("cache/DataModels", "wb") { |f| f.print Marshal::dump(DataModels) }
+      Dir.mkdir('cache') unless Dir.exists? 'cache'
+      File.unlink 'cache/DataModels' if File.exists? 'cache/DataModels'
+      File.open('cache/DataModels', 'wb') { |f| f.print Marshal::dump(DataModels) }
     end
   end
 end

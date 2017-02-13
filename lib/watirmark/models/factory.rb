@@ -46,7 +46,7 @@ module Watirmark
 
       def hash_id(size = nil, type = :hex)
         size = size || Watirmark::Configuration.instance.hash_id_length || 8
-        seed = Watirmark::Configuration.instance.hash_id_seed || "Watirmark Default Seed"
+        seed = Watirmark::Configuration.instance.hash_id_seed || 'Watirmark Default Seed'
         @hash_id ||= generate_hash_id seed, size, type
       end
 
@@ -65,7 +65,7 @@ module Watirmark
         @children << model
         create_child_methods
         Watirmark.logger.info "Added Model #{model.inspect} to #{model_name || model_class_name}"
-        return self
+        self
       end
 
 
@@ -81,14 +81,14 @@ module Watirmark
 
 
       def inspect
-        model_friendly_name = @model_name ? "#@model_name: " : nil
+        model_friendly_name = @model_name ? "#{@model_name}: " : nil
         model_details = " #{to_h}" unless to_h.empty?
         model_details = obfuscate_passwords(eval(model_details)) unless model_details.nil?
         included_models = "\n   #{@children.map(&:inspect).join("\n   ")}" unless @children.empty?
         "#{model_friendly_name}#{model_class_name}#{model_details}#{included_models}"
       end
 
-      def obfuscate_passwords hash
+      def obfuscate_passwords(hash)
         h = {}
         hash.each do |key, value|
           h[key] = '***OBFUSCATING PASSWORD***' if key.to_s.match(/password/)
@@ -105,14 +105,14 @@ module Watirmark
       end
 
 
-      def includes? hash
+      def includes?(hash)
         hash.each_pair { |key, value| return false unless send("#{key}") == value }
         true
       end
 
 
       # Update the model using the provided hash
-      def update hash
+      def update(hash)
         remove_empty_entries hash
         hash.each_pair { |key, value| send "#{key}=", value }
         self
@@ -121,14 +121,14 @@ module Watirmark
 
 
       # Update the model using the provided hash but only if exists (TODO: may not be needed any more)
-      def update_existing_members hash
+      def update_existing_members(hash)
         remove_empty_entries hash
         hash.each_pair { |key, value| send "#{key}=", value if respond_to? "#{key}=".to_sym }
         self
       end
 
-      def remove_empty_entries hash
-        hash.delete_if {|k| k.nil? || k == ':' || k =~ /^\s+$/ || k.empty?}
+      def remove_empty_entries(hash)
+        hash.delete_if { |k| k.nil? || k == ':' || k =~ /^\s+$/ || k.empty? }
       end
 
       def to_h
@@ -143,7 +143,7 @@ module Watirmark
               h[name] = value unless value.nil?
             end
           rescue NoMethodError
-            h[name] = "[defined at runtime]"
+            h[name] = '[defined at runtime]'
           end
         end
         h
@@ -153,7 +153,7 @@ module Watirmark
         class_name = self.class.name[/([^\:]+)Model$/i,1]
         model_name_exists = model_name.nil? ? false : (not model_name.empty?)
         unique_name = model_name_exists ? model_name : class_name.downcase
-        unique_name_with_uuid = unique_name + "_" + uuid
+        unique_name_with_uuid = unique_name + '_' + uuid
       end
 
     private
@@ -190,7 +190,7 @@ module Watirmark
         end
       end
 
-      def method_name model
+      def method_name(model)
         model.model_class_name.to_s.sub(/Model$/, '').underscore
       end
 
