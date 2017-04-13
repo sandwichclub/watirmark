@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 gemspec
 
 group :development do
-  gem 'watir',        '~> 6.1.0'
+  gem 'watir',        '~> 6.2.1'
   gem 'rdoc',         '~> 4.2.2'
   gem 'rspec',        '2.99.0'
   gem 'rake',         '~> 11.2.2'
