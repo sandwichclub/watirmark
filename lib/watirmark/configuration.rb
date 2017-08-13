@@ -28,7 +28,7 @@ module Watirmark
         watir_timeout:        30,
         read_timeout:         60,
         open_timeout:         60,
-      # database
+        # database
         dbhostname:           nil,
         dbusername:           nil,
         dbpassword:           nil,
