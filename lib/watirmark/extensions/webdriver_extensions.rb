@@ -113,7 +113,7 @@ module Watir
     end
 
     def download_link(*args)
-      DownloadLink.new(self, extract_selector(args).merge(:tag_name => 'a'))
+      DownloadLink.new(self, extract_selector(args).merge(tag_name: 'a'))
     end
 
     class DownloadLinkCollection < ElementCollection
@@ -123,7 +123,7 @@ module Watir
     end
 
     def download_links(*args)
-      DownloadLinkCollection.new(self, extract_selector(args).merge(:tag_name => 'a'))
+      DownloadLinkCollection.new(self, extract_selector(args).merge(tag_name: 'a'))
     end
   end
 
@@ -141,7 +141,7 @@ module Watir
 
     def column(what)
       column = 0
-      parent.th(:text => what).when_present.parent.cells.each do |cell|
+      parent.th(text: what).parent.cells.each do |cell|
         if what.kind_of? String
           return self[column] if cell.text == what
         else
@@ -161,7 +161,7 @@ module Watir
     alias :old_radio_set :set
 
     def set(value=nil)
-      @selector.update(:value => value.to_s) if value
+      @selector.update(value: value.to_s) if value
       old_radio_set
     end
 
@@ -169,8 +169,8 @@ module Watir
 
     alias :old_radio_set? :set?
 
-    def set?(value=nil)
-      @selector.update(:value => value.to_s) if value
+    def set?(value = nil)
+      @selector.update(value: value.to_s) if value
       old_radio_set?
     end
   end
