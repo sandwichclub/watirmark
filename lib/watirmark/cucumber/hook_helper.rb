@@ -25,13 +25,13 @@ module HookHelper
         Watirmark.logger.warn(e.backtrace)
       end
 
-      [data, 'image/png']
+      [data, 'image/png;base64']
     end
 
     def serialize_models
       return unless Watirmark::Configuration.instance.use_cached_models
-      Dir.mkdir('cache') unless Dir.exists? 'cache'
-      File.unlink 'cache/DataModels' if File.exists? 'cache/DataModels'
+      Dir.mkdir('cache') unless Dir.exist? 'cache'
+      File.unlink 'cache/DataModels' if File.exist? 'cache/DataModels'
       File.open('cache/DataModels', 'wb') { |f| f.print Marshal::dump(DataModels) }
     end
   end
