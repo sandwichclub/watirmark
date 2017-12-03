@@ -7,7 +7,7 @@ module Watirmark
       return if expected.nil?
 
       element.extend KeywordMethods
-      if map = element.radio_map
+      if map == element.radio_map
         expected = map.lookup(expected)
       end
 
