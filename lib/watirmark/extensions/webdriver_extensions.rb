@@ -1,5 +1,3 @@
-require 'watir/extensions/select_text'
-
 module Watir
 
   # ref: https://github.com/watir/watir-webdriver/pull/387/files
@@ -129,10 +127,6 @@ module Watir
     end
   end
 
-  module Atoms
-    ATOMS[:getPreviousSibling] = File.read(File.expand_path('../atoms/getPreviousSibling.js', __FILE__))
-    ATOMS[:getNextSibling] = File.read(File.expand_path('../atoms/getNextSibling.js', __FILE__))
-  end
 
   class Table < HTMLElement
     def each
@@ -192,43 +186,10 @@ module Watir
 
   class Element
 
-    def next_sibling
-      e = locate_dom_element(:getNextSibling)
-      e.nil? ? element(xpath: './following-sibling::*') : e
-    end
     alias_method :nextsibling, :next_sibling
-
-    def previous_sibling
-      e = locate_dom_element(:getPreviousSibling)
-      e.nil? ? element(xpath: './preceding-sibling::*') : e
-    end
     alias_method :prev_sibling, :previous_sibling
     alias_method :prevsibling, :previous_sibling
-
-    def locate_dom_element(method)
-      assert_exists
-
-      e = element_call { execute_atom method, @element }
-
-      if e.kind_of?(Selenium::WebDriver::Element)
-        Watir.element_class_for(e.tag_name.downcase).new(@parent, :element => e)
-      end
-    end
-
-    # alias_method :old_element_call, :element_call
-    # def element_call &block
-    #   old_element_call &block
-    # rescue Selenium::WebDriver::Error::UnknownError => ex
-    #   raise unless ex.message.include?("Element is not clickable at point")
-    #   reset!
-    #   assert_exists
-    #   retry
-    # end
-
-    alias_method :old_text, :text
-    def text
-      old_text.strip
-    end
+    alias_method :old_element_call, :element_call
 
     def click_if_exists
       click if exists?
@@ -254,20 +215,6 @@ module Watir
       # UnknownFrameException is workaround for- https://code.google.com/p/chromedriver/issues/detail?id=948
       retry_attempts += 1
       retry if retry_attempts == 1
-    end
-  end
-
-  class Alert
-    alias_method :old_text, :text
-    def text
-      old_text.strip
-    end
-  end
-
-  class Browser
-    alias_method :old_text, :text
-    def text
-      old_text.strip
     end
   end
 
