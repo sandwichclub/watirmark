@@ -1,7 +1,6 @@
 require_relative 'spec_helper'
 
-describe "text file" do
-
+describe 'text file' do
   before :all do
     @config = Watirmark::Configuration.instance
     @config.reset
@@ -9,42 +8,8 @@ describe "text file" do
     @config.read_from_file
   end
 
- specify 'string' do
-   @config.string.should == "foo"
- end
-
- specify 'true_boolean' do
-   @config.true_boolean.should == true
- end
-
- specify 'false_boolean' do
-   @config.false_boolean.should == false
- end
-
- specify 'symbol' do
-   @config.symbol.should == :foo
- end
-
- specify 'integer' do
-   @config.integer.should == 3
- end
-
- specify 'float' do
-   @config.float.should == 1.2
- end
-end
-
-describe "yaml file" do
-
-  before :all do
-    @config = Watirmark::Configuration.instance
-    @config.reset
-    @config.configfile = File.dirname(__FILE__) + '/configurations/config.yml'
-    @config.read_from_file
-  end
-
   specify 'string' do
-    @config.string.should == "foo"
+    @config.string.should == 'foo'
   end
 
   specify 'true_boolean' do
@@ -68,7 +33,40 @@ describe "yaml file" do
   end
 end
 
-describe "configuration" do
+describe 'yaml file' do
+  before :all do
+    @config = Watirmark::Configuration.instance
+    @config.reset
+    @config.configfile = File.dirname(__FILE__) + '/configurations/config.yml'
+    @config.read_from_file
+  end
+
+  specify 'string' do
+    @config.string.should == 'foo'
+  end
+
+  specify 'true_boolean' do
+    @config.true_boolean.should == true
+  end
+
+  specify 'false_boolean' do
+    @config.false_boolean.should == false
+  end
+
+  specify 'symbol' do
+    @config.symbol.should == :foo
+  end
+
+  specify 'integer' do
+    @config.integer.should == 3
+  end
+
+  specify 'float' do
+    @config.float.should == 1.2
+  end
+end
+
+describe 'configuration' do
   before :all do
     @config = Watirmark::Configuration.instance
     @config.reset
@@ -78,7 +76,7 @@ describe "configuration" do
   specify 'add defaults' do
     @config.email.should == 'devnull'
     @config.webdriver.should == 'firefox'
-    @config.defaults = {:email => 'email-changed'}
+    @config.defaults = { email: 'email-changed' }
     @config.email.should == 'email-changed'
     @config.webdriver.should == 'firefox'
   end
@@ -86,5 +84,4 @@ describe "configuration" do
   specify 'inspect' do
     @config.inspect.should =~ /^{.+}/
   end
-
 end

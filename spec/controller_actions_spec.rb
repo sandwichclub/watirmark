@@ -10,26 +10,19 @@ describe Watirmark::Actions do
     class ActionController < Watirmark::WebPage::Controller
       @view = ActionView
 
-      def create
-      end
+      def create; end
 
-      def create_until(&block)
-      end
+      def create_until(&block); end
 
-      def edit
-      end
+      def edit; end
 
-      def before_all
-      end
+      def before_all; end
 
-      def before_each
-      end
+      def before_each; end
 
-      def after_each
-      end
+      def after_each; end
 
-      def after_all
-      end
+      def after_all; end
     end
 
     class ActionModel < Watirmark::Model::Factory
@@ -72,8 +65,8 @@ describe Watirmark::Actions do
 
   it 'records should be processed separately' do
     controller = ActionController.new
-    controller.records << {a: 1, b: 2}
-    controller.records << {c: 3, d: 4}
+    controller.records << { a: 1, b: 2 }
+    controller.records << { c: 3, d: 4 }
     controller.expects(:before_all).once
     controller.expects(:after_all).once
     controller.expects(:before_each).twice
@@ -84,16 +77,16 @@ describe Watirmark::Actions do
   it 'records should be cleared after run' do
     controller = ActionController.new
     controller.records.should == []
-    controller.records << {a: 1, b: 2}
-    controller.records << {c: 3, d: 4}
-    controller.records.should == [{a: 1, b: 2}, {c: 3, d: 4}]
+    controller.records << { a: 1, b: 2 }
+    controller.records << { c: 3, d: 4 }
+    controller.records.should == [{ a: 1, b: 2 }, { c: 3, d: 4 }]
     controller.run :create
     controller.records.should == []
   end
 
   it 'records can be assigned models' do
     controller = ActionController.new
-    controller.records << ModelOpenStruct.new(:a => 1, :b => 2)
+    controller.records << ModelOpenStruct.new(a: 1, b: 2)
     controller.run :create
     controller.model.a.should == 1
     controller.model.b.should == 2
@@ -101,11 +94,11 @@ describe Watirmark::Actions do
 
   it 'records should be processed separately when models are given' do
     controller = ActionController.new
-    controller.records << ModelOpenStruct.new(:a => 1, :b => 2)
-    controller.records << ModelOpenStruct.new(:c => 3, :d => 4)
+    controller.records << ModelOpenStruct.new(a: 1, b: 2)
+    controller.records << ModelOpenStruct.new(c: 3, d: 4)
     controller.run :create
-    controller.model.a.should == nil
-    controller.model.b.should == nil
+    controller.model.a.should.nil?
+    controller.model.b.should.nil?
     controller.model.c.should == 3
     controller.model.d.should == 4
   end
@@ -113,7 +106,7 @@ describe Watirmark::Actions do
   it 'run can accept a block for the stop_until methods' do
     @controller.expects(:before_all).once
     @controller.expects(:after_all).once
-    @controller.run(:create_until){ eval "true"}
+    @controller.run(:create_until) { eval 'true' }
   end
 
   module ControllerActionsTest
@@ -129,9 +122,7 @@ describe Watirmark::Actions do
       keyword(:a) { Element.new }
       keyword(:b) { Element.new }
 
-      def create(*args)
-      end
-
+      def create(*args); end
     end
 
     class ActionCreateController < Watirmark::WebPage::Controller
@@ -139,16 +130,15 @@ describe Watirmark::Actions do
     end
 
     class ActionCreateControllerWithOverride < ActionCreateController
-      def populate_data
-      end
+      def populate_data; end
     end
   end
 
   it 'should not throw an exception if anything is populated' do
-    expect { ControllerActionsTest::ActionCreateController.new(:a => 1).create }.not_to raise_error
+    expect { ControllerActionsTest::ActionCreateController.new(a: 1).create }.not_to raise_error
   end
 
   it 'should not throw an exception if populate_data is overridden' do
-    lambda { ControllerActionsTest::ActionCreateControllerWithOverride.new.create }.should_not raise_error
+    -> { ControllerActionsTest::ActionCreateControllerWithOverride.new.create }.should_not raise_error
   end
 end

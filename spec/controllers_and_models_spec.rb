@@ -1,7 +1,6 @@
 require_relative 'spec_helper'
 
-describe "controllers should be able to detect and use embedded models" do
-
+describe 'controllers should be able to detect and use embedded models' do
   before :all do
     class MyView < Page
       keyword(:element) {}

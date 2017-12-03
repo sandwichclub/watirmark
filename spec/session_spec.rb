@@ -11,7 +11,7 @@ describe Watirmark::Session do
     @config.reload
   end
 
-  specify "check firefox to close the browser" do
+  specify 'check firefox to close the browser' do
     session = Watirmark::Session.instance
     b = session.openbrowser
     b.goto "file://#{@html}"
@@ -24,14 +24,14 @@ describe Watirmark::Session do
     session = Watirmark::Session.instance
     b = session.openbrowser
     b.goto "file://#{@html}"
-    b.title.should == "Controller Page"
+    b.title.should == 'Controller Page'
     b.instance_variable_get('@closed').should be false
     session.instance_variable_get('@headless').should be_nil
   end
 
   # CI can not use chrome; must verify locally
-  context "when running with Chrome" do
-    xit "check chrome to close the browser" do
+  context 'when running with Chrome' do
+    xit 'check chrome to close the browser' do
       @config.webdriver = 'chrome'
       session = Watirmark::Session.instance
       b = session.newsession
@@ -47,7 +47,7 @@ describe Watirmark::Session do
       session = Watirmark::Session.instance
       b = session.openbrowser
       b.goto "file://#{@html}"
-      b.title.should == "Controller Page"
+      b.title.should == 'Controller Page'
       b.instance_variable_get('@closed').should be false
       session.instance_variable_get('@headless').should_not be_nil
     end

@@ -1,11 +1,10 @@
 require_relative 'spec_helper'
 
 describe Watirmark::WebPage::Controller do
-
   class TestView < Page
-    keyword(:text_field) { browser.text_field(:name, 'text_field') }
-    keyword(:select_list) { browser.select_list(:name, 'select_list') }
-    keyword(:another_text_field) { browser.text_field(:id, 'validate1') }
+    keyword(:text_field)          { browser.text_field(:name, 'text_field') }
+    keyword(:select_list)         { browser.select_list(:name, 'select_list') }
+    keyword(:another_text_field)  { browser.text_field(:id, 'validate1') }
   end
 
   class TestController < Watirmark::WebPage::Controller
@@ -18,26 +17,26 @@ describe Watirmark::WebPage::Controller do
   end
 
   class VerifyView < Page
-    keyword(:validate1) { browser.text_field(:id, 'validate1') }
-    keyword(:validate2) { browser.text_field(:id, 'validate2') }
-    keyword(:validate3) { browser.text_field(:id, 'validate3') }
-    keyword(:validate4) { browser.select_list(:id, 'validate3') }
-    keyword(:checkbox) { browser.checkbox(:id, 'checkbox') }
+    keyword(:validate1)                 { browser.text_field(:id, 'validate1') }
+    keyword(:validate2)                 { browser.text_field(:id, 'validate2') }
+    keyword(:validate3)                 { browser.text_field(:id, 'validate3') }
+    keyword(:validate4)                 { browser.select_list(:id, 'validate3') }
+    keyword(:checkbox)                  { browser.checkbox(:id, 'checkbox') }
 
-    verify_keyword(:label1) { browser.td(:id, 'label1') }
-    verify_keyword(:value1) { browser.td(:id, 'value1') }
-    populate_keyword(:populate1) { browser.text_field(:id, 'validate4') }
-    populate_keyword(:populate2) { browser.td(:id, 'value1') }
+    verify_keyword(:label1)             { browser.td(:id, 'label1') }
+    verify_keyword(:value1)             { browser.td(:id, 'value1') }
+    populate_keyword(:populate1)        { browser.text_field(:id, 'validate4') }
+    populate_keyword(:populate2)        { browser.td(:id, 'value1') }
 
     private_keyword(:private_validate1) { browser.text_field(:id, 'validate1') }
-    navigation_keyword(:click_submit) { browser.button(:id, 'Submit').click }
+    navigation_keyword(:click_submit)   { browser.button(:id, 'Submit').click }
   end
 
   class VerifyController < Watirmark::WebPage::Controller
     @view = VerifyView
   end
 
-  class TestControllerSubclass < TestController;
+  class TestControllerSubclass < TestController
   end
 
   class Element
@@ -55,7 +54,6 @@ describe Watirmark::WebPage::Controller do
   end
 
   class ProcessPageControllerView < Page
-
     keyword(:a) { Element.new :a }
     process_page('Page 1') do
       keyword(:b) { Element.new :b }
@@ -65,9 +63,10 @@ describe Watirmark::WebPage::Controller do
       keyword(:d) { Element.new :d }
     end
     keyword(:e) { method :e }
-    keyword(:radio_map,
-            ['M'] => 'male',
-            [/f/i] => 'female'
+    keyword(
+      :radio_map,
+      ['M'] => 'male',
+      [/f/i] => 'female'
     ) { Page.browser.radio(:name, 'sex') }
   end
 
@@ -80,18 +79,18 @@ describe Watirmark::WebPage::Controller do
       public :value
     end.new
     @keyword = :text_field
-    @keyed_element = Watirmark::KeyedElement.new(@controller, :keyword => @keyword)
+    @keyed_element = Watirmark::KeyedElement.new(@controller, keyword: @keyword)
     @html = File.expand_path(File.dirname(__FILE__) + '/html/controller.html')
     Page.browser.goto "file://#{@html}"
   end
 
   before :each do
-    Page.browser.refresh #reset page before each test
+    Page.browser.refresh # reset page before each test
   end
 
   specify 'should supportradio maps in controllers' do
     lambda {
-      TestProcessPageController.new(:radio_map => 'f').populate_data
+      TestProcessPageController.new(radio_map: 'f').populate_data
     }.should_not raise_error
   end
 
@@ -107,9 +106,9 @@ describe Watirmark::WebPage::Controller do
       end
     end
     ControllerTest::PopulateController.new(
-        :text_field => 'test',
-        :select_list => 'b',
-        :another_text_field => 'nil'
+      text_field: 'test',
+      select_list: 'b',
+      another_text_field: 'nil'
     ).populate_data
     v = TestView.new
     v.text_field.value.should == 'test'
@@ -127,12 +126,12 @@ describe Watirmark::WebPage::Controller do
         'override'
       end
     end
-    @controller.value(Watirmark::KeyedElement.new(TestController.new, :keyword => @keyword)).should == 'override'
+    @controller.value(Watirmark::KeyedElement.new(TestController.new, keyword: @keyword)).should == 'override'
   end
 
   specify 'should support override method for verification' do
-    def @controller.verify_text_field;
-      'verify';
+    def @controller.verify_text_field
+      'verify'
     end
 
     @controller.expects(:verify_text_field).returns('verify').once
@@ -140,12 +139,12 @@ describe Watirmark::WebPage::Controller do
   end
 
   specify 'should support keyword before and after methods' do
-    def @controller.before_text_field;
-      'before';
+    def @controller.before_text_field
+      'before'
     end
 
-    def @controller.after_text_field;
-      'after';
+    def @controller.after_text_field
+      'after'
     end
 
     @controller.expects(:before_text_field).returns('before').once
@@ -158,10 +157,10 @@ describe Watirmark::WebPage::Controller do
   end
 
   specify 'should support before methods for process pages' do
-    c = TestProcessPageController.new({:a => 1, :b => 1, :c => 1, :d => 1})
+    c = TestProcessPageController.new(a: 1, b: 1, c: 1, d: 1)
 
-    def c.before_process_page_page_1;
-      true;
+    def c.before_process_page_page_1
+      true
     end
 
     c.expects(:before_process_page_page_1).returns('true').once
@@ -170,90 +169,90 @@ describe Watirmark::WebPage::Controller do
 
   specify 'should throw a Watirmark::VerificationException when a verification fails' do
     lambda {
-      VerifyController.new(:validate1 => '2').verify_data
+      VerifyController.new(validate1: '2').verify_data
     }.should raise_error(Watirmark::VerificationException, "validate1: expected '2' (String) got '1' (String)")
   end
 
   specify 'should not throw an exception when a verification succeeds' do
-    VerifyController.new(:validate2 => 'a').verify_data
+    VerifyController.new(validate2: 'a').verify_data
   end
 
   specify 'should not throw an exception when many verifications succeed' do
-    VerifyController.new(:validate1 => '1', :validate2 => 'a', :validate3 => 1.1).verify_data
+    VerifyController.new(validate1: '1', validate2: 'a', validate3: 1.1).verify_data
   end
 
   specify 'should only throw one validation exception when there are 3 three problems' do
     lambda {
-      VerifyController.new(:validate1 => 'z', :validate2 => 'y', :validate3 => 'x').verify_data
+      VerifyController.new(validate1: 'z', validate2: 'y', validate3: 'x').verify_data
     }.should raise_error(Watirmark::VerificationException)
   end
 
   specify 'should throw an exception when verifying a verify_keyword fails' do
     lambda {
-      VerifyController.new(:label1 => 'text').verify_data
+      VerifyController.new(label1: 'text').verify_data
     }.should raise_error(Watirmark::VerificationException, "label1: expected 'text' (String) got 'numbers' (String)")
   end
 
   specify 'should not throw an exception when verifying a verify_keyword succeeds' do
-    VerifyController.new(:label1 => 'numbers', :value1 => 1).verify_data
+    VerifyController.new(label1: 'numbers', value1: 1).verify_data
   end
 
   specify 'should not throw an exception when populating with a verify_keyword' do
-    VerifyController.new(:label1 => 'string').populate_data
+    VerifyController.new(label1: 'string').populate_data
   end
 
   specify 'should throw an exception when populating a populate_keyword fails' do
     lambda {
-      VerifyController.new(:populate2 => '32').populate_data
+      VerifyController.new(populate2: '32').populate_data
     }.should raise_error(NoMethodError)
   end
 
   specify 'should not throw an exception when populating a populate_keyword succeeds' do
-    VerifyController.new(:populate1 => '3.14159').populate_data
+    puts VerifyController.new(populate1: '3.14159').populate_data
   end
 
   specify 'should not throw an exception when verifying with a populate_keyword' do
-    VerifyController.new(:populate1 => 'void').verify_data
+    VerifyController.new(populate1: 'void').verify_data
   end
 
   specify 'should not populate a private_keyword successfully' do
-    c = VerifyController.new(:validate1 => 'hello')
+    c = VerifyController.new(validate1: 'hello')
     c.populate_data
-    VerifyController.new(:private_validate1 => 'goodbye').populate_data
+    VerifyController.new(private_validate1: 'goodbye').populate_data
     c.verify_data
   end
 
   specify 'should not verify a private_keyword successfully' do
-    c = VerifyController.new(:private_validate1 => 'hello')
-    VerifyController.new(:validate1 => 'goodbye').populate_data
+    c = VerifyController.new(private_validate1: 'hello')
+    VerifyController.new(validate1: 'goodbye').populate_data
     c.verify_data
   end
 
   specify 'should not throw an exception when populating or verifying a private_keyword fails' do
-    c = VerifyController.new(:private_validate1 => 'goodbye')
+    c = VerifyController.new(private_validate1: 'goodbye')
     c.populate_data
-    c.model.update(:private_validate1 => 'hello')
+    c.model.update(private_validate1: 'hello')
     c.verify_data
   end
 
   specify 'should not throw an exception when populating or verifying a navigation_keyword fails' do
-    c = VerifyController.new(:button1 => 'Cancel')
+    c = VerifyController.new(button1: 'Cancel')
     c.populate_data
-    c.model.update(:button1 => 'Submit')
+    c.model.update(button1: 'Submit')
     c.verify_data
   end
 
   specify 'false should be a valid keyword value' do
-    c = VerifyController.new(:checkbox => true)
+    c = VerifyController.new(checkbox: true)
     c.populate_data
     VerifyView.new.checkbox.set?.should == true
-    c.model.update(:checkbox => false)
+    c.model.update(checkbox: false)
     c.populate_data
     VerifyView.new.checkbox.set?.should == false
   end
 end
 
-describe "controllers should be able to detect and use embedded models" do
+describe 'controllers should be able to detect and use embedded models' do
   before :all do
     class MyView < Page
       keyword(:element) { @@element }
@@ -275,7 +274,7 @@ describe "controllers should be able to detect and use embedded models" do
     @password = Password.new
     @login = Login.new
     @login.add_model @password
-    @model = User.new(:first_name => 'first')
+    @model = User.new(first_name: 'first')
     @model.add_model @login
   end
 
@@ -292,7 +291,7 @@ describe "controllers should be able to detect and use embedded models" do
   end
 end
 
-describe "controllers should create a default model if one exists" do
+describe 'controllers should create a default model if one exists' do
   before :all do
     class MyView < Page
       private_keyword(:element)
@@ -312,12 +311,9 @@ describe "controllers should create a default model if one exists" do
   end
 end
 
-
-describe "Similar Models" do
-
+describe 'Similar Models' do
   before :all do
     class ProcessPageControllerView < Page
-
       keyword(:a) { Element.new :a }
       process_page('Page 1') do
         keyword(:b) { Element.new :b }
@@ -329,8 +325,7 @@ describe "Similar Models" do
       keyword(:e) { method :e }
       keyword(:radio_map,
               ['M'] => 'male',
-              [/f/i] => 'female'
-      ) { Page.browser.radio(:name, 'sex') }
+              [/f/i] => 'female') { Page.browser.radio(:name, 'sex') }
     end
 
     class ModelA < Watirmark::Model::Factory
@@ -410,7 +405,6 @@ describe "Similar Models" do
     @controller = TestProcessPageController.new(ModelE.new)
     @controller.model.should be_kind_of ModelB
     @controller.supermodel.should be_kind_of ModelE
-
   end
 
   specify 'should select the correct model when base model has 2 similar models' do
@@ -441,5 +435,4 @@ describe "Similar Models" do
     @controller.model = ModelA.new
     @controller.model.should be_kind_of ModelA
   end
-
 end

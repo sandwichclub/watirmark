@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.test_files    = Dir['spec/**/*.rb']
   s.executables   = 'watirmark'
   s.require_paths = %w[lib]
-  s.add_dependency('watir', '~> 6.2.1')
+  s.add_dependency('watir', '~> 6.10.0')
   s.add_dependency('activesupport', '~> 3.2.22.5')
   s.add_dependency('american_date', '~> 1.1.1')
   s.add_dependency('chromedriver-helper', '~> 1.1.0')
