@@ -75,7 +75,7 @@ module Watirmark
       case expected
       when Regexp
         should_match_regexp(expected, actual)
-      when Float, Fixnum, Bignum, Integer, Rational
+      when Float, Integer, Rational
         should_match_number(expected, actual)
       else
         if normalize_value(expected.to_s) == normalize_value(actual.to_s)
